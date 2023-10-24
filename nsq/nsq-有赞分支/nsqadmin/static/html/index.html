@@ -1,0 +1,43 @@
+<!doctype html>
+<html>
+<head>
+    <title>nsqadmin</title>
+    <link rel="icon" type="image/png" href="/static/favicon.png">
+    <link rel="stylesheet" href="/static/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/base.css">
+    <script src="/static/jquery-latest.js"></script>
+    <script src="/static/jquery.tablesorter.js"></script>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+    <img class="image-preview img-polaroid">
+
+    <div id="container"></div>
+
+    <script type="text/javascript">
+        var USER_AGENT = 'nsqadmin/v{{.Version}}';
+        var VERSION = '{{.Version}}';
+        var GRAPHITE_URL = '{{if .ProxyGraphite}}{{else}}{{.GraphiteURL}}{{end}}';
+        var GRAPH_ENABLED = {{if .GraphEnabled}}true{{else}}false{{end}};
+        var USE_STATSD_PREFIXES = {{if .UseStatsdPrefixes}}true{{else}}false{{end}};
+        var STATSD_COUNTER_FORMAT = '{{.StatsdCounterFormat}}';
+        var STATSD_GAUGE_FORMAT = '{{.StatsdGaugeFormat}}';
+        var STATSD_INTERVAL = {{.StatsdInterval}};
+        var STATSD_PREFIX = '{{.StatsdPrefix}}';
+        var NSQLOOKUPD = [{{range .NSQLookupd}}'{{.}}',{{end}}];
+        var ALLNSQLOOKUPDS = [{{range .AllNSQLookupds}}'{{.}}',{{end}}];
+        var DCNSQLOOKUPD = {{.DCNSQLookupd | dcLookupdList}};
+        var DCALLNSQLOOKUPDS = {{.DCAllNSQLookupds | dcLookupdList}};
+        var AUTH_URL = '{{.AuthUrl}}';
+        var LOGOUT_URL = '{{.LogoutUrl}}';
+        var LOGIN        = {{if .Login}}true{{else}}false{{end}};
+        var USER         = '{{.User}}';
+        var AUTH_ENABLED = {{if .AuthEnabled}}true{{else}}false{{end}};
+        var HAS_ENDPOINT = {{if .HasNotificationEndpoint}}true{{else}}false{{end}};
+        var ENABLE_ZAN_TEST_SKIP = {{if .EnableZanTestSkip}}true{{else}}false{{end}}
+    </script>
+    <script src="/static/vendor.js"></script>
+    <script src="/static/main.js"></script>
+</body>
+</html>

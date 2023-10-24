@@ -1,0 +1,35 @@
+{{> warning}}
+{{> error}}
+
+<div class="row">
+    <div class="col-md-12">
+        <h2>Topics</h2>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+    {{#if collection.length}}
+        <table class="table table-condensed table-bordered">
+            <tr class="title">
+                <th>Topic</th>
+            </tr>
+            {{#each collection}}
+            <tr>
+                <td>
+                    <a class="link" href="/topics/{{urlencode name}}">{{name}}</a>
+                    {{#if ordered}}
+                        <a id = "order" class="label label-primary">Order</a>
+                    {{/if}}
+                    {{#if extend_support}}
+                        <a id = "ext" class="label label-primary">Ext</a>
+                    {{/if}}
+                </td>
+            </tr>
+            {{/each}}
+        </table>
+    {{else}}
+        <div class="alert alert-warning"><h4>Notice</h4>No Topics Found</div>
+    {{/if}}
+    </div>
+</div>

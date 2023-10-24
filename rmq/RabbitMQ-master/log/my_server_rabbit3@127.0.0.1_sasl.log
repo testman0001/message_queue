@@ -1,0 +1,324 @@
+
+=CRASH REPORT==== 25-Dec-2015::15:45:52 ===
+  crasher:
+    initial call: application_master:init/4
+    pid: <0.293.0>
+    registered_name: []
+    exception exit: {bad_return,
+                        {{rabbit_shovel,start,[normal,[]]},
+                         {'EXIT',
+                             {undef,
+                                 [{rabbit_shovel,start,[normal,[]],[]},
+                                  {application_master,start_it_old,4,
+                                      [{file,"application_master.erl"},
+                                       {line,274}]}]}}}}
+      in function  application_master:init/4 (application_master.erl, line 138)
+    ancestors: [<0.292.0>]
+    messages: [{'EXIT',<0.294.0>,normal}]
+    links: [<0.292.0>,<0.7.0>]
+    dictionary: []
+    trap_exit: true
+    status: running
+    heap_size: 610
+    stack_size: 24
+    reductions: 124
+  neighbours:
+
+=CRASH REPORT==== 25-Dec-2015::15:45:53 ===
+  crasher:
+    initial call: option_set_server:init/1
+    pid: <0.46.0>
+    registered_name: []
+    exception exit: {could_not_start,rabbitmq_shovel,
+                        {undef,
+                            [{rabbit_shovel,start,[normal,[]],[]},
+                             {application_master,start_it_old,4,
+                                 [{file,"application_master.erl"},
+                                  {line,274}]}]}}
+      in function  gen_server:init_it/6 (gen_server.erl, line 321)
+    ancestors: [<0.2.0>]
+    messages: []
+    links: [<0.2.0>]
+    dictionary: []
+    trap_exit: false
+    status: running
+    heap_size: 2584
+    stack_size: 24
+    reductions: 1182185
+  neighbours:
+
+=CRASH REPORT==== 25-Dec-2015::15:46:17 ===
+  crasher:
+    initial call: application_master:init/4
+    pid: <0.331.0>
+    registered_name: []
+    exception exit: {bad_return,
+                        {{rabbit_shovel,start,[normal,[]]},
+                         {'EXIT',
+                             {undef,
+                                 [{rabbit_shovel,start,[normal,[]],[]},
+                                  {application_master,start_it_old,4,
+                                      [{file,"application_master.erl"},
+                                       {line,274}]}]}}}}
+      in function  application_master:init/4 (application_master.erl, line 138)
+    ancestors: [<0.330.0>]
+    messages: [{'EXIT',<0.332.0>,normal}]
+    links: [<0.330.0>,<0.7.0>]
+    dictionary: []
+    trap_exit: true
+    status: running
+    heap_size: 610
+    stack_size: 24
+    reductions: 124
+  neighbours:
+
+=CRASH REPORT==== 25-Dec-2015::15:46:19 ===
+  crasher:
+    initial call: option_set_server:init/1
+    pid: <0.46.0>
+    registered_name: []
+    exception exit: {could_not_start,rabbitmq_shovel,
+                        {undef,
+                            [{rabbit_shovel,start,[normal,[]],[]},
+                             {application_master,start_it_old,4,
+                                 [{file,"application_master.erl"},
+                                  {line,274}]}]}}
+      in function  gen_server:init_it/6 (gen_server.erl, line 321)
+    ancestors: [<0.2.0>]
+    messages: []
+    links: [<0.2.0>]
+    dictionary: []
+    trap_exit: false
+    status: running
+    heap_size: 2584
+    stack_size: 24
+    reductions: 1190753
+  neighbours:
+
+=CRASH REPORT==== 25-Dec-2015::15:47:04 ===
+  crasher:
+    initial call: application_master:init/4
+    pid: <0.289.0>
+    registered_name: []
+    exception exit: {bad_return,
+                        {{rabbit_shovel,start,[normal,[]]},
+                         {'EXIT',
+                             {undef,
+                                 [{rabbit_shovel,start,[normal,[]],[]},
+                                  {application_master,start_it_old,4,
+                                      [{file,"application_master.erl"},
+                                       {line,274}]}]}}}}
+      in function  application_master:init/4 (application_master.erl, line 138)
+    ancestors: [<0.288.0>]
+    messages: [{'EXIT',<0.290.0>,normal}]
+    links: [<0.288.0>,<0.7.0>]
+    dictionary: []
+    trap_exit: true
+    status: running
+    heap_size: 610
+    stack_size: 24
+    reductions: 124
+  neighbours:
+
+=CRASH REPORT==== 25-Dec-2015::15:47:06 ===
+  crasher:
+    initial call: option_set_server:init/1
+    pid: <0.46.0>
+    registered_name: []
+    exception exit: {could_not_start,rabbitmq_shovel,
+                        {undef,
+                            [{rabbit_shovel,start,[normal,[]],[]},
+                             {application_master,start_it_old,4,
+                                 [{file,"application_master.erl"},
+                                  {line,274}]}]}}
+      in function  gen_server:init_it/6 (gen_server.erl, line 321)
+    ancestors: [<0.2.0>]
+    messages: []
+    links: [<0.2.0>]
+    dictionary: []
+    trap_exit: false
+    status: running
+    heap_size: 2584
+    stack_size: 24
+    reductions: 1185131
+  neighbours:
+
+=CRASH REPORT==== 25-Dec-2015::20:44:48 ===
+  crasher:
+    initial call: os_mon_sysinfo:init/1
+    pid: <0.143.0>
+    registered_name: os_mon_sysinfo
+    exception exit: {port_died,normal}
+      in function  gen_server:terminate/6 (gen_server.erl, line 737)
+    ancestors: [os_mon_sup,<0.141.0>]
+    messages: []
+    links: [<0.142.0>]
+    dictionary: []
+    trap_exit: true
+    status: running
+    heap_size: 233
+    stack_size: 24
+    reductions: 403
+  neighbours:
+
+=SUPERVISOR REPORT==== 25-Dec-2015::20:44:48 ===
+     Supervisor: {local,os_mon_sup}
+     Context:    child_terminated
+     Reason:     {port_died,normal}
+     Offender:   [{pid,<0.143.0>},
+                  {name,os_mon_sysinfo},
+                  {mfargs,{os_mon_sysinfo,start_link,[]}},
+                  {restart_type,permanent},
+                  {shutdown,2000},
+                  {child_type,worker}]
+
+
+=CRASH REPORT==== 25-Dec-2015::20:44:48 ===
+  crasher:
+    initial call: os_mon_sysinfo:init/1
+    pid: <0.384.0>
+    registered_name: os_mon_sysinfo
+    exception exit: {port_died,normal}
+      in function  gen_server:terminate/6 (gen_server.erl, line 737)
+    ancestors: [os_mon_sup,<0.141.0>]
+    messages: []
+    links: [<0.142.0>]
+    dictionary: []
+    trap_exit: true
+    status: running
+    heap_size: 610
+    stack_size: 24
+    reductions: 369
+  neighbours:
+
+=SUPERVISOR REPORT==== 25-Dec-2015::20:44:48 ===
+     Supervisor: {local,os_mon_sup}
+     Context:    child_terminated
+     Reason:     {port_died,normal}
+     Offender:   [{pid,<0.384.0>},
+                  {name,os_mon_sysinfo},
+                  {mfargs,{os_mon_sysinfo,start_link,[]}},
+                  {restart_type,permanent},
+                  {shutdown,2000},
+                  {child_type,worker}]
+
+
+=CRASH REPORT==== 25-Dec-2015::20:44:48 ===
+  crasher:
+    initial call: os_mon_sysinfo:init/1
+    pid: <0.385.0>
+    registered_name: os_mon_sysinfo
+    exception exit: {port_died,normal}
+      in function  gen_server:terminate/6 (gen_server.erl, line 737)
+    ancestors: [os_mon_sup,<0.141.0>]
+    messages: []
+    links: [<0.142.0>]
+    dictionary: []
+    trap_exit: true
+    status: running
+    heap_size: 610
+    stack_size: 24
+    reductions: 369
+  neighbours:
+
+=SUPERVISOR REPORT==== 25-Dec-2015::20:44:48 ===
+     Supervisor: {local,os_mon_sup}
+     Context:    child_terminated
+     Reason:     {port_died,normal}
+     Offender:   [{pid,<0.385.0>},
+                  {name,os_mon_sysinfo},
+                  {mfargs,{os_mon_sysinfo,start_link,[]}},
+                  {restart_type,permanent},
+                  {shutdown,2000},
+                  {child_type,worker}]
+
+
+=CRASH REPORT==== 26-Dec-2015::18:35:30 ===
+  crasher:
+    initial call: os_mon_sysinfo:init/1
+    pid: <0.216.0>
+    registered_name: os_mon_sysinfo
+    exception exit: {port_died,normal}
+      in function  gen_server:terminate/6 (gen_server.erl, line 737)
+    ancestors: [os_mon_sup,<0.214.0>]
+    messages: []
+    links: [<0.215.0>]
+    dictionary: []
+    trap_exit: true
+    status: running
+    heap_size: 233
+    stack_size: 24
+    reductions: 403
+  neighbours:
+
+=SUPERVISOR REPORT==== 26-Dec-2015::18:35:30 ===
+     Supervisor: {local,os_mon_sup}
+     Context:    child_terminated
+     Reason:     {port_died,normal}
+     Offender:   [{pid,<0.216.0>},
+                  {name,os_mon_sysinfo},
+                  {mfargs,{os_mon_sysinfo,start_link,[]}},
+                  {restart_type,permanent},
+                  {shutdown,2000},
+                  {child_type,worker}]
+
+
+=CRASH REPORT==== 26-Dec-2015::18:35:30 ===
+  crasher:
+    initial call: os_mon_sysinfo:init/1
+    pid: <0.5579.0>
+    registered_name: os_mon_sysinfo
+    exception exit: {port_died,normal}
+      in function  gen_server:terminate/6 (gen_server.erl, line 737)
+    ancestors: [os_mon_sup,<0.214.0>]
+    messages: []
+    links: [<0.215.0>]
+    dictionary: []
+    trap_exit: true
+    status: running
+    heap_size: 610
+    stack_size: 24
+    reductions: 369
+  neighbours:
+
+=SUPERVISOR REPORT==== 26-Dec-2015::18:35:30 ===
+     Supervisor: {local,os_mon_sup}
+     Context:    child_terminated
+     Reason:     {port_died,normal}
+     Offender:   [{pid,<0.5579.0>},
+                  {name,os_mon_sysinfo},
+                  {mfargs,{os_mon_sysinfo,start_link,[]}},
+                  {restart_type,permanent},
+                  {shutdown,2000},
+                  {child_type,worker}]
+
+
+=CRASH REPORT==== 26-Dec-2015::18:35:30 ===
+  crasher:
+    initial call: os_mon_sysinfo:init/1
+    pid: <0.5580.0>
+    registered_name: []
+    exception exit: {port_died,normal}
+      in function  gen_server:init_it/6 (gen_server.erl, line 321)
+    ancestors: [os_mon_sup,<0.214.0>]
+    messages: []
+    links: [<0.215.0>]
+    dictionary: []
+    trap_exit: true
+    status: running
+    heap_size: 610
+    stack_size: 24
+    reductions: 350
+  neighbours:
+
+=SUPERVISOR REPORT==== 26-Dec-2015::18:35:30 ===
+     Supervisor: {local,os_mon_sup}
+     Context:    start_error
+     Reason:     {port_died,normal}
+     Offender:   [{pid,<0.5579.0>},
+                  {name,os_mon_sysinfo},
+                  {mfargs,{os_mon_sysinfo,start_link,[]}},
+                  {restart_type,permanent},
+                  {shutdown,2000},
+                  {child_type,worker}]
+

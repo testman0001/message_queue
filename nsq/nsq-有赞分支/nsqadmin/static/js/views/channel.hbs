@@ -1,0 +1,400 @@
+{{> warning}}
+{{> error}}
+
+<ol class="breadcrumb">
+  <li><a class="link" href="/">Streams</a>
+  <li><a class="link" href="/topics/{{urlencode topic}}">{{topic}}</a>
+  <li class="active">{{name}}</li>
+</ol>
+
+<div class="row">
+    <div class="col-md-6">
+        <blockquote>
+            <p>Topic: <strong>{{topic}}</strong>
+            <p>Channel: <strong>{{name}}</strong>
+        </blockquote>
+    </div>
+</div>
+
+{{#if only_channel}}
+<div class="row">
+    <div class="col-md-12">
+        <div class="alert alert-warning"><h4>Notice</h4>Could NOT DELETE current channel as it is the LAST channel under topic: {{topic}}</div>
+    </div>
+</div>
+{{/if}}
+
+{{#unless nodes.length}}
+<div class="row">
+    <div class="col-md-6">
+        <div class="alert alert-warning">
+            <h4>Notice</h4> No producers exist for this topic/channel.
+            <p>See <a class="link" href="/lookup">Lookup</a> for more information.
+        </div>
+    </div>
+</div>
+{{else}}
+<div class="row channel-actions">
+    <div class="col-md-2">
+        <button class="btn btn-medium btn-warning" data-action="empty" {{#if login}}{{else}}disabled{{/if}}>Empty Queue</button>
+    </div>
+    {{#unless only_channel}}
+    <div class="col-md-2">
+        <button class="btn btn-medium btn-danger" data-action="delete" {{#if login}}{{else}}disabled{{/if}}>Delete Channel</button>
+    </div>
+    {{/unless}}
+    <div class="col-md-2">
+        {{#if paused}}
+        <button class="btn btn-medium btn-success" data-action="unpause" {{#if login}}{{else}}disabled{{/if}}>UnPause Channel</button>
+        {{else}}
+        <button class="btn btn-medium btn-primary" data-action="pause" {{#if login}}{{else}}disabled{{/if}}>Pause Channel</button>
+        {{/if}}
+    </div>
+    <div class="col-md-2">
+        {{#if skipped}}
+            <button class="btn btn-medium btn-success" data-action="unskip" {{#if login}}{{else}}disabled{{/if}}>UnSkip Channel</button>
+        {{else}}
+            <button class="btn btn-medium btn-primary" data-action="skip" {{#if login}}{{else}}disabled{{/if}}>Skip Channel</button>
+        {{/if}}
+    </div>
+    {{#if (and is_ext enable_zan_test_skip)}}
+    <div class="col-md-2">
+        {{#if zan_test_skipped}}
+            <button class="btn btn-medium btn-success" data-action="unskipZanTest" {{#if login}}{{else}}disabled{{/if}}>UnSkip Zan Test</button>
+        {{else}}
+            <button class="btn btn-medium btn-primary" data-action="skipZanTest" {{#if login}}{{else}}disabled{{/if}}>Skip Zan Test</button>
+        {{/if}}
+    </div>
+    {{/if}}
+    <div class="col-md-2" title="reset consume offset to specified data time, if specified timestamp is earlier(later) than timestamp of first(last) available message in queue, offset will be set to the beginning(tail) of message queue.">
+        <button class="btn btn-medium btn-primary resetbtn" data-action="reset" disabled=true>Reset Channel Offset</button>
+        <input id="resetChannelDatetime" type="text" name="resetTime" maxlength="10" size="20" placeholder="input timestamp in second" pattern="[1-9][0-9]{9}"/>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="toggle">
+            <h4>Message Latency Distribution
+                <span>
+                    <a> >>></a>
+                </span>
+            </h4>
+        </div>
+        <div class="canHide" style="display: none;">
+            <table class="table table-bordered table-condensed">
+                <tr>
+                    {{#if dcnsqlookupd.length}}
+                        <th colspan="3" class="text-center">&nbsp;</th>
+                    {{else}}
+                        <th colspan="2" class="text-center">&nbsp;</th>
+                    {{/if}}
+                    <th class="text-center" colspan="12">Message Consume Latency Distribution(pub~sub ack & pub~sub send)</th>
+                </tr>
+                <tr>
+                    {{#if dcnsqlookupd.length}}
+                    <th>DC</th>
+                    {{/if}}
+                    <th>NSQd Host</th>
+                    <th>Partition</th>
+                    <th>< 16ms</th>
+                    <th>< 32ms</th>
+                    <th>< 64ms</th>
+                    <th>< 128ms</th>
+                    <th>< 256ms</th>
+                    <th>< 512ms</th>
+                    <th>< 1024ms</th>
+                    <th>< 2048ms</th>
+                    <th>< 4s</th>
+                    <th>< 8s</th>
+                    <th>< 16s</th>
+                    <th>> 16s</th>
+                </tr>
+                {{#each nodes}}
+                    <tr>
+                        {{#if ../../dcnsqlookupd.length}}
+                        <td rowspan="2">
+                        {{dc}}
+                        </td>
+                        {{/if}}
+                        <td rowspan="2">
+                        <button class="btn-link red tombstone-link" data-node="{{node}}" data-topic="{{../name}}" style="padding: 0 6px; border: 0;">✘</button>
+                            {{#if show_broadcast_address}}
+                                {{hostname_port}} (<a class="link" href="/nodes/{{node}}">{{node}}</a>)
+                            {{else}}
+                                <a class="link" href="/nodes/{{node}}">{{hostname_port}}</a>
+                            {{/if}}
+                            {{#if paused}} <span class="label label-primary">paused</span>{{/if}}
+                        </td>
+                        <td rowspan="2">{{topic_partition}}</td>
+                        {{#each msg_consume_latency_stats}}
+                            <td>{{this}}</td>
+                        {{/each}}
+                    </tr>
+                    <tr>
+                        {{#each msg_delivery_latency_stats}}
+                            <td>{{this}}</td>
+                        {{/each}}
+                    </tr>
+                     {{#if ../graph_active}}
+                    <tr class="graph-row">
+                        <td></td>
+                        <td></td>
+                        <td colspan="6">
+                            <a href="{{large_graph "channel" node statsd_name channel_name "consume_above500ms_count"}}">
+                                <img width="120" height="40" src="{{sparkline "channel" node statsd_name channel_name "consume_above500ms_count"}}">
+                            </a>
+                        </td>
+                        <td colspan="6">
+                            <a href="{{large_graph "channel" node statsd_name channel_name "consume_above1s_count"}}">
+                                <img width="120" height="40" src="{{sparkline "channel" node statsd_name channel_name "consume_above1s_count"}}">
+                            </a>
+                        </td>
+                    </tr>
+                    <tr class="graph-row">
+                        <td></td>
+                        <td></td>
+                        <td colspan="6">
+                            <a href="{{large_graph "channel" node statsd_name channel_name "delivery2ack_above500ms_count"}}">
+                                <img width="120" height="40" src="{{sparkline "channel" node statsd_name channel_name "delivery2ack_above500ms_count"}}">
+                            </a>
+                        </td>
+                        <td colspan="6">
+                            <a href="{{large_graph "channel" node statsd_name channel_name "delivery2ack_above1s_count"}}">
+                                <img width="120" height="40" src="{{sparkline "channel" node statsd_name channel_name "delivery2ack_above1s_count"}}">
+                            </a>
+                        </td>
+                    </tr>
+                    {{/if}}
+                {{/each}}
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+    <h4>Channel</h4>
+    <table class="table table-bordered table-condensed">
+        <tr>
+            {{#if dcnsqlookupd.length}}
+            <th colspan="4" class="text-center">&nbsp;</th>
+            {{else}}
+            <th colspan="3" class="text-center">&nbsp;</th>
+            {{/if}}
+            <th colspan="5" class="text-center">Message Queues</th>
+            <th colspan="{{#if graph_active}}5{{else}}4{{/if}}" class="text-center">Statistics</th>
+            {{#if e2e_processing_latency.percentiles.length}}
+            <th colspan="{{e2e_processing_latency.percentiles.length}}">E2E Processing Latency</th>
+            {{/if}}
+        </tr>
+        <tr>
+            {{#if dcnsqlookupd.length}}
+            <th>DC</th>
+            {{/if}}
+            <th>NSQd Host</th>
+            <th>Partition</th>
+            <th>Action</th>
+            <th>Depth</th>
+            <th>DepthTimestamp + RecentDelayed</th>
+            <th>Memory + DiskSize</th>
+            <th>In-Flight</th>
+            <th>Deferred + DelayedQueue</th>
+            <th>Requeued</th>
+            <th>Timed Out</th>
+            <th>Messages</th>
+            {{#if graph_active}}<th>Rate</th>{{/if}}
+            <th>Connections</th>
+            {{#each e2e_processing_latency.percentiles}}
+                <th>{{floatToPercent quantile}}<sup>{{percSuffix quantile}}</sup></th>
+            {{/each}}
+        </tr>
+        {{#each nodes}}
+        <tr>
+            {{#if ../../dcnsqlookupd.length}}
+            <td>{{dc}}</td>
+            {{/if}}
+            <td>
+                {{#if show_broadcast_address}}
+                {{hostname_port}} (<a class="link" href="/nodes/{{node}}">{{node}}</a>)
+                {{else}}
+                <a class="link" href="/nodes/{{node}}">{{hostname_port}}</a>
+                {{/if}}
+                {{#if paused}} <span class="label label-primary">paused</span>{{/if}}
+                {{#if skipped}} <span class="label label-primary">skipped</span>{{/if}}
+            </td>
+            <td>{{topic_partition}}</td>
+            <td>
+                <button class="btn btn-medium btn-warning btn-xs" id="finish-msg" data-action="finish" data-node="{{node}}" data-partition="{{topic_partition}}">FIN</button>
+            </td>
+            <td>{{commafy depth}}</td>
+            <td>{{depth_ts}} + {{delayed_queue_recent}}</td>
+            <td>{{commafy memory_depth}} + {{commafy depth_size}}</td>
+            <td>{{commafy in_flight_count}}</td>
+            <td>{{commafy deferred_count}} + {{commafy delayed_queue_count}}</td>
+            <td>{{commafy requeue_count}}</td>
+            <td>{{commafy timeout_count}}</td>
+            <td>{{commafy message_count}}</td>
+            {{#if ../graph_active}}
+                <td class="bold rate" target="{{rate "topic" node statsd_name ""}}"></td>
+            {{/if}}
+            <td>{{commafy clients.length}}</td>
+            {{#if e2e_processing_latency.percentiles.length}}
+                {{#each e2e_processing_latency.percentiles}}
+                <td>
+                    <span title="{{floatToPercent quantile}}: min = {{nanotohuman min}}, max = {{nanotohuman max}}">{{nanotohuman average}}</span>
+                </td>
+                {{/each}}
+            {{/if}}
+        </tr>
+        {{#if ../graph_active}}
+        <tr class="graph-row">
+            <td></td>
+            <td></td>
+            <td></td>
+            <td><a href="{{large_graph "channel" node statsd_name channel_name "depth"}}"><img width="120" height="20"  src="{{sparkline "channel" node statsd_name channel_name "depth"}}"></a></td>
+            <td></td>
+            <td></td>
+            <td><a href="{{large_graph "channel" node statsd_name channel_name "in_flight_count"}}"><img width="120" height="20"  src="{{sparkline "channel" node statsd_name channel_name "in_flight_count"}}"></a></td>
+            <td><a href="{{large_graph "channel" node statsd_name channel_name "deferred_count"}}"><img width="120" height="20"  src="{{sparkline "channel" node statsd_name channel_name "deferred_count"}}"></a></td>
+            <td><a href="{{large_graph "channel" node statsd_name channel_name "requeue_count"}}"><img width="120" height="20"  src="{{sparkline "channel" node statsd_name channel_name "requeue_count"}}"></a></td>
+            <td><a href="{{large_graph "channel" node statsd_name channel_name "timeout_count"}}"><img width="120" height="20"  src="{{sparkline "channel" node statsd_name channel_name "timeout_count"}}"></a></td>
+            <td><a href="{{large_graph "channel" node statsd_name channel_name "message_count"}}"><img width="120" height="20"  src="{{sparkline "channel" node statsd_name channel_name "message_count"}}"></a></td>
+            <td></td>
+            <td><a href="{{large_graph "channel" node statsd_name channel_name "clients"}}"><img width="120" height="20"  src="{{sparkline "channel" node statsd_name channel_name "clients"}}"></a></td>
+            {{#if e2e_processing_latency.percentiles.length}}
+            <td colspan="{{e2e_processing_latency.percentiles.length}}">
+                <a href="{{large_graph "e2e" node e2e_processing_latency "" "e2e_processing_latency"}}"><img width="120" height="20" src="{{sparkline "e2e" node e2e_processing_latency "" "e2e_processing_latency"}}"></a>
+            </td>
+            {{/if}}
+        </tr>
+        {{/if}}
+        {{/each}}
+        <tr class="info">
+            <td>Total:</td>
+            {{#if dcnsqlookupd.length}}
+            <td></td>
+            {{/if}}
+            <td></td>
+            <td></td>
+            <td>{{commafy depth}}</td>
+            <td></td>
+            <td>{{commafy memory_depth}} + {{commafy depth_size}}</td>
+            <td>{{commafy in_flight_count}}</td>
+            <td>{{commafy deferred_count}}</td>
+            <td>{{commafy requeue_count}}</td>
+            <td>{{commafy timeout_count}}</td>
+            <td>{{commafy message_count}}</td>
+            {{#if ../graph_active}}
+                <td class="bold rate" target="{{rate "topic" node statsd_name ""}}"></td>
+            {{/if}}
+            <td>{{commafy clients.length}}</td>
+            {{#if e2e_processing_latency.percentiles.length}}
+                {{#each e2e_processing_latency.percentiles}}
+                <td>
+                    <span title="{{floatToPercent quantile}}: min = {{nanotohuman min}}, max = {{nanotohuman max}}">{{nanotohuman average}}</span>
+                </td>
+                {{/each}}
+            {{/if}}
+        </tr>
+        {{#if graph_active}}
+        <tr class="graph-row">
+            <td></td>
+            <td></td>
+            <td></td>
+            <td><a href="{{large_graph "channel" node statsd_name channel_name "depth"}}"><img width="120" height="20"  src="{{sparkline "channel" node statsd_name channel_name "depth"}}"></a></td>
+            <td></td>
+            <td></td>
+            <td><a href="{{large_graph "channel" node statsd_name channel_name "in_flight_count"}}"><img width="120" height="20"  src="{{sparkline "channel" node statsd_name channel_name "in_flight_count"}}"></a></td>
+            <td><a href="{{large_graph "channel" node statsd_name channel_name "deferred_count"}}"><img width="120" height="20"  src="{{sparkline "channel" node statsd_name channel_name "deferred_count"}}"></a></td>
+            <td><a href="{{large_graph "channel" node statsd_name channel_name "requeue_count"}}"><img width="120" height="20"  src="{{sparkline "channel" node statsd_name channel_name "requeue_count"}}"></a></td>
+            <td><a href="{{large_graph "channel" node statsd_name channel_name "timeout_count"}}"><img width="120" height="20"  src="{{sparkline "channel" node statsd_name channel_name "timeout_count"}}"></a></td>
+            <td><a href="{{large_graph "channel" node statsd_name channel_name "message_count"}}"><img width="120" height="20"  src="{{sparkline "channel" node statsd_name channel_name "message_count"}}"></a></td>
+            <td></td>
+            <td><a href="{{large_graph "channel" node statsd_name channel_name "clients"}}"><img width="120" height="20"  src="{{sparkline "channel" node statsd_name channel_name "clients"}}"></a></td>
+            {{#if e2e_processing_latency.percentiles.length}}
+            <td colspan="{{e2e_processing_latency.percentiles.length}}">
+                <a href="{{large_graph "e2e" node e2e_processing_latency "" "e2e_processing_latency"}}"><img width="120" height="20"  src="{{sparkline "e2e" node e2e_processing_latency "" "e2e_processing_latency"}}"></a>
+            </td>
+            {{/if}}
+        </tr>
+        {{/if}}
+    </table>
+    </div>
+</div>
+{{/unless}}
+
+<h4>Client Connections</h4>
+
+{{#if hasEndpoint}}
+<div class="row consumer-actions">
+    <div class="col-md-2" title="invoke a consumer to current channel, which does nothing but FINISH messages. Duplicate invoke to current channel makes no effect.">
+        <button class="btn btn-medium btn-warning" data-action="sink" {{#if login}}{{else}}disabled{{/if}}>Invoke Consume Sink</button>
+    </div>
+    <div class="col-md-2" title="remove a consumer to current channel, if there is any.">
+        <button class="btn btn-medium btn-warning" data-action="sink_removal" {{#if login}}{{else}}disabled{{/if}}>Remove Consume Sink</button>
+    </div>
+</div>
+{{/if}}
+
+<div class="row">
+    <div class="col-md-12">
+        {{#unless clients.length}}
+            <div class="alert alert-warning"><h4>Notice</h4>No clients connected to this channel</div>
+        {{else}}
+        <table class="table table-bordered table-condensed">
+            <tr>
+                <th>Client Host</th>
+                <th>User-Agent</th>
+                <th>Attributes</th>
+                <th>NSQd Host</th>
+                <th>In-Flight</th>
+                <th>Ready Count</th>
+                <th>Finished</th>
+                <th>Requeued</th>
+                <th>TimeOut</th>
+                <th>Messages</th>
+                <th>Connected</th>
+            </tr>
+            {{#each clients}}
+            <tr>
+                <td title="{{remote_address}}">{{hostname_port}}{{#if show_client_id}} ({{client_id}}){{/if}}</td>
+                <td>{{#if user_agent.length}}<small>{{user_agent}}</small>{{/if}}</td>
+                <td>
+                    {{#if sample_rate}}
+                        <span class="label label-info">Sampled {{sample_rate}}%</span>
+                    {{/if}}
+                    {{#if tls}}
+                        <span class="label label-warning" {{#if tls_version}}title="{{tls_version}} {{tls_cipher_suite}} {{tls_negotiated_protocol}} mutual:{{tls_negotiated_protocol_is_mutual}}"{{/if}}>TLS</span>
+                    {{/if}}
+                    {{#if deflate}}
+                        <span class="label label-default">Delfate</span>
+                    {{/if}}
+                    {{#if snappy}}
+                        <span class="label label-primary">Snappy</span>
+                    {{/if}}
+                    {{#if authed}}
+                        <span class="label label-success">
+                        {{#if auth_identity_url}}<a href="{{auth_identity_url}}">{{/if}}
+                        <span class="glyphicon glyphicon-user white" title="Authed{{#if auth_identity}} Identity:{{auth_identity}}{{/if}}"></span>
+                        {{#if auth_identity_url}}</a>{{/if}}
+                        </span>
+                    {{/if}}
+                    {{#if desired_tag}}
+                        <span class="label label-primary">DesiredTag: {{desired_tag}}</span>
+                    {{/if}}
+                </td>
+                <td><a class="link" href="/nodes/{{node}}">{{node}}</a></td>
+                <td>{{commafy in_flight_count}}</td>
+                <td>{{commafy ready_count}}</td>
+                <td>{{commafy finish_count}}</td>
+                <td>{{commafy requeue_count}}</td>
+                <td>{{commafy timeout_count}}</td>
+                <td>{{commafy message_count}}</td>
+                <td>{{nanotohuman connected}}</td>
+            </tr>
+            {{/each}}
+        </table>
+        {{/unless}}
+    </div>
+</div>
