@@ -1,0 +1,60 @@
+背景
+autoheal是rabbitmq的集群恢复策略，在节点重新上线后触发
+
+恢复逻辑分为四步：
+
+1.选出获胜的网络分区。
+
+评价标准：客户端连接数、节点数目，如果都相同则用其他方式挑选（参数输入的顺序）
+
+2.停掉其他分区的节点
+
+3.等待全部停止
+
+4.启动上述节点
+ 
+
+涉及到的角色及选取方式：
+
+leader — 集群中任意选取的节点，用来主导autoheal的公正角色。可能在获胜分区，也可能在失败分区被重启
+
+winner — 获胜的分区中选出来的一个节点，负责重启节点
+
+losers — 失败分区中的节点，待重启
+
+ps：leader可能持续受到新的autoheal请求，但是全部会被忽略，直到winner通知leader当前的autoheal流程结束或者已经终止，或者是与winner断开了连接
+ 
+
+可能的状态：
+
+not_healing — 默认状态
+
+{winner_waiting, OutstandingStops, Notify} — winner，等待所有失败节点停止，随后将通知他们重启
+
+{leader_waiting, Winner, Notify} — leader，已经指定了winner和losers，等待winner通知autoheal是否结束了
+
+restarting — 重启中
+ 
+
+消息流：
+1. Any node (leader included) >> {request_start, node()} >> Leader
+当Mnesia检测出集群出现分区，则从集群中找到第一个节点作为leader节点进行autoheal操作
+
+2. Leader >> {become_winner, Losers} >> Winner
+Leader决策出winner和losers，并且通知winner
+
+3. Winner >> {winner_is, Winner} >> All losers
+winner通知losers启动新进程用于rabbit的重启
+
+4. Winner >> autoheal_safe_to_start >> All losers
+winner发现所有losers已经停止或者autoheal 流程终止，通知losers可以重启rabbit
+
+5. Leader >> report_autoheal_status >> Winner
+在leader为loser时，leader因为重启，会主动发送该请求给winner，看是否autoheal结束了
+
+6. Winner >> {autoheal_finished, Winner} >> Leader
+winner告知leader，autoheal已经结束
+ 
+问题：
+两节点下表现还好，一旦使用3节点，且掉线的是leader节点（固定，根据host排序，上线后必定选择自己当leader），有可能选出的分区划分错误，导致重启错误的在线节点，进而一直脑裂
+同时还有无法结束autoheal的场景出现，以及autoheal过程中再次断线导致的rabbit无法启动

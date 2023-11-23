@@ -1,0 +1,20 @@
+该模式是少数派暂停模式，当节点处于少数派分区时停止，连通后重启，数据一致性更强
+
+问题：
+在断网时间为net_tick_time附近恢复网络，有很大概率出现脑裂分区。
+已知节点掉线流程：
+1.rabbi_node_monitor:handle_info('DOWN'...) -> rabbit app掉线
+2.rabbi_node_monitor:handle_dead_rabbit ->
+    ok = rabbit_networking:on_node_down(Node), 节点不在线的话就删除mnesia数据库中的监听信息
+    ok = rabbit_amqqueue:on_node_down(Node), 主要是队列、绑定关系删除
+    ok = rabbit_alarm:on_node_down(Node),  告警
+    ok = rabbit_mnesia:on_node_down(Node), 检查是否唯一磁盘节点down并打印，不做数据修改
+1.rabbi_node_monitor:handle_info('nodedown'...) -> 节点级别掉线，推测是心跳超时后触发
+2.rabbi_node_monitor:handle_dead_node ->
+rabbi_node_monitor:await_cluster_recovery, 如果处于少数派则重启本节点
+一致性问题：
+一种情况，例如掉线节点上其他节点的ad队列，其队列元数据在掉线节点确认脑裂后可能已经删除，而在线节点因为实际未掉线而保留，此时直接恢复集群会出现问题，其他元数据类似
+当然，如果掉线节点能正常重启全量同步mnesia数据库没有问题，但是如果立刻上线，无法触发pause_minority策略，那么始终会无法重启，异常一直存在
+另外在恢复过程中也可能出现分区误判，导致重启正常节点
+解决办法：
+增加后台修复脚本
